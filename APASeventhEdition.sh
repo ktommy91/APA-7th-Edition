@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants
-SOURCE_URL="https://raw.githubusercontent.com/briankavanaugh/APA-7th-Edition/main/APASeventhEdition.xsl"
+SOURCE_URL="https://raw.githubusercontent.com/ktommy91/APA-7th-Edition/main/APASeventhEdition.xsl"
 LOCAL_DIR="/Library/Application Support/APAStyleTool"
 LOCAL_FILE="$LOCAL_DIR/APASeventhEdition.xsl"
 PLIST_FILE="/Library/LaunchDaemons/com.apastyle.copy.plist"

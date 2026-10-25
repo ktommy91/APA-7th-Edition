@@ -2,6 +2,9 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt"	xmlns:b="http://schemas.openxmlformats.org/officeDocument/2006/bibliography" xmlns:t="http://www.microsoft.com/temp">
   <xsl:output method="html" encoding="us-ascii"/>
+  <!-- Customized for Debreceni Egyetem GTK, Marketing es Kereskedelem Intezet.
+       Institutional requirements take precedence; otherwise APA 7 with Hungarian localization.
+       Main override: direct quotation locator is rendered as year:page. -->
 
   <xsl:template match="*" mode="outputHtml2">
       <xsl:apply-templates mode="outputHtml"/>
@@ -387,13 +390,8 @@
 
   
   <xsl:template name="templ_str_AndOthersUnCap" >
-    <xsl:param name="LCID" />
-    <xsl:variable name="_LCID">
-      <xsl:call-template name="localLCID">
-        <xsl:with-param name="LCID" select="$LCID"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:value-of select="/*/b:Locals/b:Local[@LCID=$_LCID]/b:Strings/b:AndOthersUnCap"/>
+    <!-- DE GTK/MKI institutional override: never localize to "mtsai.". -->
+    <xsl:text>et al.</xsl:text>
   </xsl:template>
 
   
@@ -1979,14 +1977,29 @@
   </xsl:template>
 
   
+  <!-- Hungarian month names for bibliography publication dates. -->
+  <xsl:template name="formatHungarianMonth">
+    <xsl:param name="month"/>
+    <xsl:choose>
+      <xsl:when test="number($month)=1">január</xsl:when>
+      <xsl:when test="number($month)=2">február</xsl:when>
+      <xsl:when test="number($month)=3">március</xsl:when>
+      <xsl:when test="number($month)=4">április</xsl:when>
+      <xsl:when test="number($month)=5">május</xsl:when>
+      <xsl:when test="number($month)=6">június</xsl:when>
+      <xsl:when test="number($month)=7">július</xsl:when>
+      <xsl:when test="number($month)=8">augusztus</xsl:when>
+      <xsl:when test="number($month)=9">szeptember</xsl:when>
+      <xsl:when test="number($month)=10">október</xsl:when>
+      <xsl:when test="number($month)=11">november</xsl:when>
+      <xsl:when test="number($month)=12">december</xsl:when>
+      <xsl:otherwise><xsl:value-of select="$month"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template name="templ_prop_APA_Date_DMY" >
-    <xsl:param name="LCID" />
-    <xsl:variable name="_LCID">
-      <xsl:call-template name="localLCID">
-        <xsl:with-param name="LCID" select="$LCID"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:value-of select="/*/b:Locals/b:Local[@LCID=$_LCID]/b:APA/b:Date/b:DMY"/>
+    <!-- DE GTK/MKI override: publication dates use year, month day regardless of source LCID. -->
+    <xsl:text>%Y, %M %D.</xsl:text>
   </xsl:template>
 
   
@@ -2002,13 +2015,8 @@
 
   
   <xsl:template name="templ_prop_APA_Date_MY" >
-    <xsl:param name="LCID" />
-    <xsl:variable name="_LCID">
-      <xsl:call-template name="localLCID">
-        <xsl:with-param name="LCID" select="$LCID"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:value-of select="/*/b:Locals/b:Local[@LCID=$_LCID]/b:APA/b:Date/b:MY"/>
+    <!-- DE GTK/MKI override: publication dates use year, month regardless of source LCID. -->
+    <xsl:text>%Y, %M</xsl:text>
   </xsl:template>
 
   
@@ -2140,11 +2148,11 @@
     <xsl:choose>
 
       <xsl:when test="b:Version">
-        <xsl:text>2020</xsl:text>
+        <xsl:text>2026</xsl:text>
       </xsl:when>
 
       <xsl:when test="b:OfficeStyleKey">
-        <xsl:text>APA</xsl:text>
+        <xsl:text>APA7_DEGTK_MKI_HU</xsl:text>
       </xsl:when>
 
       <xsl:when test="b:XslVersion">
@@ -2154,7 +2162,7 @@
       <xsl:when test="b:StyleNameLocalized">
         <xsl:choose>
           <xsl:when test="b:StyleNameLocalized/b:Lcid='1033'">
-            <xsl:text>APA7</xsl:text>
+            <xsl:text>APA 7 - DE GTK MKI (Hungarian)</xsl:text>
           </xsl:when>
           <xsl:when test="b:StyleNameLocalized/b:Lcid='1025'">
             <xsl:text>APA</xsl:text>
@@ -2256,7 +2264,7 @@
             <xsl:text>APA</xsl:text>
           </xsl:when>
           <xsl:when test="b:StyleNameLocalized/b:Lcid='1038'">
-            <xsl:text>APA</xsl:text>
+            <xsl:text>APA 7 - DE GTK MKI (magyar)</xsl:text>
           </xsl:when>
           <xsl:when test="b:StyleNameLocalized/b:Lcid='1048'">
             <xsl:text>APA</xsl:text>
@@ -3000,19 +3008,6 @@
 
 						<xsl:variable name="ppPages">
 							<xsl:if test="string-length($pages)>0">
-								<xsl:choose>
-									<xsl:when test="0!=string-length(translate($pages, concat(',0123456789 ', $prop_APA_Hyphens), ''))"/>
-									<xsl:when test="not(string-length($pages)=string-length(translate($pages, ',', '')))">
-										<xsl:call-template name="templ_str_PagesCountinousShort"/>
-									</xsl:when>
-									<xsl:when test="string-length($pages)=string-length(translate($pages, $prop_APA_Hyphens, ''))">
-										<xsl:call-template name="templ_str_PageShort"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:call-template name="templ_str_PagesCountinousShort"/>
-									</xsl:otherwise>
-								</xsl:choose>
-								<xsl:call-template name="templ_prop_Space"/>
 								<xsl:value-of select="$pages"/>
 							</xsl:if>
 						</xsl:variable>
@@ -3075,7 +3070,10 @@
 
 						<xsl:if test="string-length($volume) > 0 or string-length($pages) > 0">
 							<xsl:if test="string-length($displayAuthor) > 0 or string-length($displayTitle) > 0 or string-length($year) > 0">
-								<xsl:call-template name="templ_prop_ListSeparator"/>
+								<xsl:choose>
+									<xsl:when test="string-length($pages) > 0 and string-length($volume) = 0"><xsl:text>:</xsl:text></xsl:when>
+									<xsl:otherwise><xsl:call-template name="templ_prop_ListSeparator"/></xsl:otherwise>
+								</xsl:choose>
 							</xsl:if>
 
 							<xsl:choose>
@@ -7236,36 +7234,43 @@
 
   </xsl:template>
 
+  <!-- Formats every given-name component as an initial. Example: "Richard L." -> "R. L.". -->
   <xsl:template name="formatNameInitial">
     <xsl:param name="name"/>
-    <xsl:variable name="temp">
-      <xsl:call-template name="handleSpaces">
-        <xsl:with-param name="field" select="$name"/>
-      </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:variable name="prop_APA_Hyphens">
-      <xsl:call-template name="templ_prop_Hyphens"/>
-    </xsl:variable>
-
-    <xsl:if test="string-length($temp)>0">
-
-      <xsl:variable name="tempWithoutSpaces">
-        <xsl:value-of select="translate($temp, '&#32;&#160;', '')"/>
-        
-      </xsl:variable>
-
-      <xsl:if test="not(contains($prop_APA_Hyphens, substring($tempWithoutSpaces, 1, 1)))">
-        <xsl:value-of select="substring($tempWithoutSpaces, 1, 1)"/>
-        <xsl:call-template name="templ_prop_DotInitial"/>
-      </xsl:if>
-
-      <xsl:call-template name="handleHyphens">
-        <xsl:with-param name="name" select="$tempWithoutSpaces"/>
-      </xsl:call-template>
+    <xsl:variable name="temp" select="normalize-space($name)"/>
+    <xsl:if test="string-length($temp) &gt; 0">
+      <xsl:choose>
+        <xsl:when test="contains($temp, ' ')">
+          <xsl:call-template name="formatNameInitialToken">
+            <xsl:with-param name="token" select="substring-before($temp, ' ')"/>
+          </xsl:call-template>
+          <xsl:call-template name="templ_prop_Space"/>
+          <xsl:call-template name="formatNameInitial">
+            <xsl:with-param name="name" select="substring-after($temp, ' ')"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="formatNameInitialToken">
+            <xsl:with-param name="token" select="$temp"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:template>
 
+  <xsl:template name="formatNameInitialToken">
+    <xsl:param name="token"/>
+    <xsl:variable name="clean" select="translate(normalize-space($token), '.', '')"/>
+    <xsl:if test="string-length($clean) &gt; 0">
+      <xsl:value-of select="substring($clean, 1, 1)"/>
+      <xsl:call-template name="templ_prop_DotInitial"/>
+      <xsl:if test="contains($clean, '-')">
+        <xsl:text>-</xsl:text>
+        <xsl:value-of select="substring(substring-after($clean, '-'), 1, 1)"/>
+        <xsl:call-template name="templ_prop_DotInitial"/>
+      </xsl:if>
+    </xsl:if>
+  </xsl:template>
 
 
   <xsl:template name="formatNameOneItem">
@@ -8132,10 +8137,15 @@
 				<xsl:variable name="what" select="substring($format, 2, 1)" />
 				<xsl:choose>
 					<xsl:when test="$what = 'D'">
-						<xsl:value-of select="$day"/>
+						<xsl:choose>
+							<xsl:when test="number($day)=number($day)"><xsl:value-of select="number($day)"/></xsl:when>
+							<xsl:otherwise><xsl:value-of select="$day"/></xsl:otherwise>
+						</xsl:choose>
 					</xsl:when>
 					<xsl:when test="$what = 'M'">
-						<xsl:value-of select="$month"/>
+						<xsl:call-template name="formatHungarianMonth">
+							<xsl:with-param name="month" select="$month"/>
+						</xsl:call-template>
 					</xsl:when>
 					<xsl:when test="$what = 'Y'">
 						<xsl:value-of select="$year"/>

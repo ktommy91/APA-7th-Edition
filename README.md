@@ -23,7 +23,7 @@ Until (unless) Microsoft gets around to adding a template for the latest version
 Note: The bat file simply runs the following line:
 
 ```bash
-curl https://raw.githubusercontent.com/briankavanaugh/APA-7th-Edition/main/APASeventhEdition.xsl -o "%appdata%\Microsoft\Bibliography\Style\APASeventhEdition.xsl"
+curl https://raw.githubusercontent.com/ktommy91/APA-7th-Edition/main/APASeventhEdition.xsl -o "%appdata%\Microsoft\Bibliography\Style\APASeventhEdition.xsl"
 ```
 
 ### MacOS
