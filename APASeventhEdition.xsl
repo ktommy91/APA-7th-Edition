@@ -3284,18 +3284,8 @@
 
                 <xsl:variable name="ppPages">
                   <xsl:if test="string-length($pages)>0">
-                    <xsl:choose>
-                      <xsl:when test="0!=string-length(translate($pages, concat(',0123456789 ', $prop_APA_Hyphens), ''))"/>
-                      <xsl:when test="not(string-length($pages)=string-length(translate($pages, ',', '')))">
-                        <xsl:call-template name="templ_str_PagesCountinousShort"/>
-                      </xsl:when>
-                      <xsl:when test="string-length($pages)=string-length(translate($pages, $prop_APA_Hyphens, ''))">
-                        <xsl:call-template name="templ_str_PageShort"/>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <xsl:call-template name="templ_str_PagesCountinousShort"/>
-                      </xsl:otherwise>
-                    </xsl:choose>
+                    <!-- DE-GTK institutional requirement: book chapters and published conference papers always use "pp." before the page range. -->
+                    <xsl:text>pp.</xsl:text>
                     <xsl:call-template name="templ_prop_Space"/>
                     <xsl:value-of select="$pages"/>
                   </xsl:if>
